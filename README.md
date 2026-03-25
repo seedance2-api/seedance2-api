@@ -389,5 +389,5 @@ for _ in range(60):
 ## Links
 
 - [API Documentation](https://seedance2-ai.ai/api-docs)
-- [Get API Key](https://seedance2-ai.ai/settings)
+- [Get API Key](https://seedance2-ai.ai/account)
 - [Purchase Credits](https://seedance2-ai.ai/credits)
