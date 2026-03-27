@@ -1,27 +1,14 @@
-# Breaking News: Seedance 2.0 Official API Enters Open Phase
+# Seedance 2.0 Official API Avaiable Now
 
-The official **Seedance 2.0 API** has now entered its open phase. However, API access is currently available **exclusively to trusted partners**.
+### 1.The official **Seedance 2.0 API** has now entered its open phase. 
 
-As a premier trusted partner of ByteDance, we have successfully integrated with the official API. Building on this foundation, we are excited to launch our **Enhanced Proxy API**, enabling users worldwide to enjoy a superior generative experience ahead of general availability.
 
-### 1. Core Capabilities and Current Limitations of the Official Seedance 2.0 API
+However, API access is currently available **exclusively to trusted partners**.
 
-The Seedance 2.0 API utilizes an advanced audio-video co-generation architecture and supports a rich set of multimodal inputs:  
-- Text  
-- Images (up to 9)  
-- Videos (up to 3, total duration ≤15 seconds)  
-- Audio files (up to 3 MP3s, total duration ≤15 seconds)  
+As a premier trusted partner of ByteDance, we, seedance2-ai.ai, have successfully integrated with the official API. Building on this foundation, we are excited to launch our **Enhanced API**, enabling users worldwide to enjoy a superior generative experience ahead of general availability.
 
-It enables **director-level precise control**.
 
-**However**, it currently has the following limitations:
-
-- **Limited Access**: Still in early open phase and restricted to trusted partners only  
-- **Resolution**: Default output is 720p  
-- **Prompt Optimization**: The model is deeply optimized for Chinese-language prompts  
-- **Server Location**: Official servers are located in mainland China  
-
-### 2. Our Enhanced Proxy API: Breaking Through Official Limitations
+### 2. Our Enhanced API: Breaking Through Official Limitations
 
 We have built upon the official API with deep enhancements and global optimizations:
 
