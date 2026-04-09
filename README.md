@@ -373,7 +373,7 @@ for _ in range(60):
 - **Polling:** 5-second intervals recommended
 - **Reference mode:** Max 12 files total (9 images + 3 videos + 3 audio)
 
-## Links
+## API Links
 
 - [API Documentation](https://seedance2-ai.ai/api-docs)
 - [Get API Key](https://seedance2-ai.ai/account)
