@@ -1,12 +1,11 @@
-# Seedance 2.0 Official API Avaiable Now
+```markdown
+# Best Seedance 2.0 API Avaiable Now
 
 ### 1.The official **Seedance 2.0 API** has now entered its open phase. 
-
 
 However, API access is currently available **exclusively to trusted partners**.
 
 As a premier trusted partner of ByteDance, we, seedance2-ai.ai, have successfully integrated with the official API. Building on this foundation, we are excited to launch our **Enhanced API**, enabling users worldwide to enjoy a superior generative experience ahead of general availability.
-
 
 ### 2. Our Enhanced API: Breaking Through Official Limitations
 
@@ -31,24 +30,24 @@ All enhancements are seamlessly integrated. Simply call through our **Proxy API*
 
 **Let's use Seedance 2.0 API Now**  
 
-**Base URL:** `https://seedance2-ai.ai/api/v1`
+**Base URL:** `https://seegen.ai/api/v1`
 
-- [Get your API key](https://seedance2-ai.ai/account)
-- [Full interactive docs](https://seedance2-ai.ai/api-docs)
+- [Get your API key](https://seegen.ai/account)
+- [Full interactive docs](https://seegen.ai/api-docs)
 
 ## Quick Start
 
 ```bash
 # Check your credits
 curl -H "Authorization: Bearer YOUR_API_KEY" \
-  https://seedance2-ai.ai/api/v1/account/credits
+  https://seegen.ai/api/v1/account/credits
 
 # Generate a video from text
-curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
+curl -X POST https://seegen.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "seedance2",
+    "model": "sd2",
     "inputs": {
       "prompt": "A golden retriever running on the beach at sunset",
       "duration": "5s",
@@ -58,7 +57,7 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 
 # Poll for result
 curl -H "Authorization: Bearer YOUR_API_KEY" \
-  "https://seedance2-ai.ai/api/v1/jobs/queryTask?taskId=TASK_ID"
+  "https://seegen.ai/api/v1/jobs/queryTask?taskId=TASK_ID"
 ```
 
 ## Authentication
@@ -69,7 +68,7 @@ All requests require a Bearer token in the `Authorization` header:
 Authorization: Bearer YOUR_API_KEY
 ```
 
-API keys can be created in [Account Settings](https://seedance2-ai.ai/account) (max 10 per account, shown only once at creation).
+API keys can be created in [Account Settings](https://seegen.ai/account) (max 10 per account, shown only once at creation).
 
 ## Endpoints
 
@@ -83,8 +82,8 @@ API keys can be created in [Account Settings](https://seedance2-ai.ai/account) (
 
 | Model | Description |
 |-------|-------------|
-| `seedance2` | Standard quality, best results |
-| `seedance2-fast` | Faster generation, lower cost |
+| `sd2` | Standard quality, best results |
+| `sd2-fast` | Faster generation, lower cost |
 
 ## Generation Modes
 
@@ -93,11 +92,11 @@ API keys can be created in [Account Settings](https://seedance2-ai.ai/account) (
 Create videos from text prompts alone.
 
 ```bash
-curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
+curl -X POST https://seegen.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "seedance2",
+    "model": "sd2",
     "inputs": {
       "prompt": "A golden retriever running on the beach at sunset",
       "duration": "5s",
@@ -111,11 +110,11 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 Animate a static image into a video.
 
 ```bash
-curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
+curl -X POST https://seegen.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "seedance2",
+    "model": "sd2",
     "inputs": {
       "urls": ["https://example.com/photo.jpg"],
       "prompt": "The woman slowly turns her head and smiles",
@@ -129,11 +128,11 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 Define start and end frames — the model generates the transition between them.
 
 ```bash
-curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
+curl -X POST https://seegen.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "seedance2",
+    "model": "sd2",
     "inputs": {
       "urls": [
         "https://example.com/first-frame.jpg",
@@ -151,11 +150,11 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 Use multiple images, videos, and audio files to guide generation.
 
 ```bash
-curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
+curl -X POST https://seegen.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "seedance2",
+    "model": "sd2",
     "inputs": {
       "urls": [
         "https://example.com/ref1.jpg",
@@ -177,7 +176,7 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `model` | string | Yes | — | `"seedance2"` or `"seedance2-fast"` |
+| `model` | string | Yes | — | `"sd2"` or `"sd2-fast"` |
 | `inputs.prompt` | string | No | — | Text description of video content |
 | `inputs.urls` | string[] | No | — | Image URLs (1 for i2v, 2 for keyframe, up to 9 for reference) |
 | `inputs.videoUrls` | string[] | No | — | Reference video URLs (reference mode only, max 3) |
@@ -205,7 +204,7 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 ```json
 {
   "taskId": "task_abc123",
-  "model": "seedance2",
+  "model": "sd2",
   "status": "COMPLETED",
   "creditsUsed": 200,
   "output": [
@@ -237,11 +236,11 @@ curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
 Provide a `callBackUrl` to receive a POST request when the task completes:
 
 ```bash
-curl -X POST https://seedance2-ai.ai/api/v1/jobs/createTask \
+curl -X POST https://seegen.ai/api/v1/jobs/createTask \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "seedance2",
+    "model": "sd2",
     "callBackUrl": "https://your-server.com/webhook/seedance",
     "inputs": {
       "prompt": "A cat playing piano",
@@ -254,8 +253,8 @@ The callback payload has the same schema as the [Query Task](#query-task) respon
 
 ## Credit Pricing
 
-| Duration | seedance2 | seedance2-fast |
-|----------|-----------|----------------|
+| Duration | sd2 | sd2-fast |
+|----------|-----|----------|
 | 5s base | 200 | 160 |
 | 5s + 2K upscale | 300 | 260 |
 | 5s + 4K upscale | 400 | 360 |
@@ -270,7 +269,7 @@ Multi-reference mode with video inputs: base cost × 2 + upscale charges.
 |--------|---------|------------|
 | 400 | Invalid parameters | Check the error message and fix request body |
 | 401 | Invalid or missing API key | Verify your `Authorization: Bearer` header |
-| 402 | Insufficient credits | [Purchase more credits](https://seedance2-ai.ai/credits) |
+| 402 | Insufficient credits | [Purchase more credits](https://seegen.ai/credits) |
 | 403 | Access denied | You can only query your own tasks |
 | 404 | Task not found | Verify the `taskId` is correct |
 | 429 | Concurrency limit reached | Max 3 simultaneous tasks — wait for one to finish |
@@ -280,7 +279,7 @@ Multi-reference mode with video inputs: base cost × 2 + upscale charges.
 
 ```javascript
 const API_KEY = process.env.SEEDANCE_API_KEY;
-const BASE = "https://seedance2-ai.ai/api/v1";
+const BASE = "https://seegen.ai/api/v1";
 const headers = {
   Authorization: `Bearer ${API_KEY}`,
   "Content-Type": "application/json",
@@ -295,7 +294,7 @@ const { taskId } = await fetch(`${BASE}/jobs/createTask`, {
   method: "POST",
   headers,
   body: JSON.stringify({
-    model: "seedance2",
+    model: "sd2",
     inputs: {
       urls: ["https://example.com/photo.jpg"],
       prompt: "The person slowly looks up and smiles",
@@ -330,8 +329,8 @@ import time
 import os
 
 API_KEY = os.environ["SEEDANCE_API_KEY"]
-BASE = "https://seedance2-ai.ai/api/v1"
-headers = {"Authorization": f"Bearer {API_KEY}"}
+BASE = "https://seegen.ai/api/v1"
+headers = {"Authorization": f"Bearer ${API_KEY}"}
 
 # Check credits
 credits = requests.get(f"{BASE}/account/credits", headers=headers).json()
@@ -342,7 +341,7 @@ task = requests.post(
     f"{BASE}/jobs/createTask",
     headers=headers,
     json={
-        "model": "seedance2",
+        "model": "sd2",
         "inputs": {
             "urls": ["https://example.com/photo.jpg"],
             "prompt": "The person slowly looks up and smiles",
@@ -375,6 +374,7 @@ for _ in range(60):
 
 ## API Links
 
-- [API Documentation](https://seedance2-ai.ai/api-docs)
-- [Get API Key](https://seedance2-ai.ai/account)
-- [Purchase Credits](https://seedance2-ai.ai/credits)
+- [API Documentation](https://seegen.ai/api-docs)
+- [Get API Key](https://seegen.ai/account)
+- [Purchase Credits](https://seegen.ai/credits)
+```
