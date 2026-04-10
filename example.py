@@ -1,76 +1,87 @@
 import os
-import json
-import requests
+import asyncio
+import time
+import httpx
 from dotenv import load_dotenv
 
-# load
 load_dotenv()
 
-API_KEY = os.getenv("SEEDANCE_API_KEY")
-BASE_URL = os.getenv("SEEDANCE_BASE_URL", "https://api.seedance2-ai.com/v1")
+API_KEY = os.getenv("SEEGEN_API_KEY")
+BASE_URL = os.getenv("SEEGEN_BASE_URL", "https://seegen.ai/api/v1")
+CALLBACK_URL = os.getenv("CALLBACK_URL")
 
 headers = {
     "Authorization": f"Bearer {API_KEY}",
     "Content-Type": "application/json"
 }
 
-def text2video_example():
-    """text to video example"""
+
+async def create_task(payload: dict):
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(f"{BASE_URL}/jobs/createTask", json=payload, headers=headers)
+        resp.raise_for_status()
+        return resp.json()
+
+
+async def query_task(task_id: str):
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.get(f"{BASE_URL}/jobs/queryTask?taskId={task_id}", headers=headers)
+        resp.raise_for_status()
+        return resp.json()
+
+
+async def get_credits():
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.get(f"{BASE_URL}/account/credits", headers=headers)
+        resp.raise_for_status()
+        return resp.json()
+
+
+async def upload_asset(url: str, asset_type: str = "IMAGE", name: str = None):
+    """Upload asset (IMAGE / VIDEO / AUDIO) for review"""
     payload = {
-        "prompt": "A beautiful sunset over the ocean, realistic, 4K",
-        "duration": 5,
-        "width": 1024,
-        "height": 576,
-        "negative_prompt": "blurry, low quality, ugly"
+        "url": url,
+        "type": asset_type,
+        "name": name or f"asset_{int(time.time())}"
     }
-    
-    response = requests.post(
-        f"{BASE_URL}/generations/text2video",
-        headers=headers,
-        json=payload
-    )
-    
-    print("Text2Video Response:")
-    print(json.dumps(response.json(), indent=2, ensure_ascii=False))
-    return response.json()
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(f"{BASE_URL}/assets/upload", json=payload, headers=headers)
+        resp.raise_for_status()
+        return resp.json()
 
-def image2video_example(image_path):
-    """image to video example"""
-    files = {
-        "image": open(image_path, "rb")
-    }
-    
-    data = {
-        "prompt": "Smooth motion, cinematic, high quality",
-        "duration": 5,
-        "motion_strength": 0.8
-    }
-    
-    response = requests.post(
-        f"{BASE_URL}/generations/image2video",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        files=files,
-        data=data
-    )
-    
-    print("\nImage2Video Response:")
-    print(json.dumps(response.json(), indent=2, ensure_ascii=False))
-    return response.json()
 
-def get_task_status_example(task_id):
-    """get task status example"""
-    response = requests.get(
-        f"{BASE_URL}/tasks/{task_id}",
-        headers=headers
-    )
-    
-    print("\nTask Status:")
-    print(json.dumps(response.json(), indent=2, ensure_ascii=False))
-    return response.json()
+# ==================== Usage Examples ====================
 
 if __name__ == "__main__":
-    # run example
-    text2video_example()
-    
-    # image to video（replace to your path）
-    # image2video_example("your_image.jpg")
+    async def main():
+        print("Available credits:", await get_credits())
+
+        # Example 1: Text-to-Video
+        payload = {
+            "model": "sd2",
+            "inputs": {
+                "prompt": "A golden retriever running on the beach at sunset, cinematic lighting, highly detailed",
+                "duration": "5s",
+                "resolution": "1280x720"
+            },
+            "callBackUrl": CALLBACK_URL
+        }
+
+        result = await create_task(payload)
+        task_id = result["taskId"]
+        print(f"Task created successfully. Task ID: {task_id}")
+
+        # Polling for result
+        for _ in range(36):  # ~6 minutes max
+            status = await query_task(task_id)
+            print(f"Status: {status['status']}")
+            if status["status"] == "COMPLETED":
+                print("Generation completed!")
+                print("Video URL:", status["output"][0]["url"])
+                break
+            elif status["status"] == "FAILED":
+                print("Generation failed:", status.get("error"))
+                break
+            await asyncio.sleep(10)
+
+    asyncio.run(main())
