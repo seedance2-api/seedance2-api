@@ -1,7 +1,6 @@
-```markdown
-# Best Seedance 2.0 API Avaiable Now
+# Best Seedance 2.0 API Available Now
 
-### 1.The official **Seedance 2.0 API** has now entered its open phase. 
+### 1. The official **Seedance 2.0 API** has now entered its open phase.
 
 However, API access is currently available **exclusively to trusted partners**.
 
@@ -28,7 +27,7 @@ Users can automatically or manually select the nearest node, significantly reduc
 
 All enhancements are seamlessly integrated. Simply call through our **Proxy API** to automatically enjoy every optimization — no extra configuration needed.
 
-**Let's use Seedance 2.0 API Now**  
+Let's use Seedance 2.0 API Now  
 
 **Base URL:** `https://seegen.ai/api/v1`
 
@@ -58,7 +57,6 @@ curl -X POST https://seegen.ai/api/v1/jobs/createTask \
 # Poll for result
 curl -H "Authorization: Bearer YOUR_API_KEY" \
   "https://seegen.ai/api/v1/jobs/queryTask?taskId=TASK_ID"
-```
 
 ## Authentication
 
