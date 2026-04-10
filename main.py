@@ -1,150 +1,94 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
-import requests
-import json
+import httpx
 import os
 from dotenv import load_dotenv
-from typing import Optional, Dict, Any
+from typing import Dict, Any, Optional
+import uvicorn
 
-# load
 load_dotenv()
 
 app = FastAPI(
-    title="Seedance2 AI API",
-    description="Seedance2 AI Video Generator API Service",
-    version="1.0.0"
+    title="SeeGen AI (Seedance 2.0) Proxy",
+    description="Official proxy for SeeGen.ai Seedance 2.0 Video Generation API",
+    version="2.0.0"
 )
 
-# config
-BASE_URL = os.getenv("SEEDANCE_BASE_URL", "https://api.seedance2-ai.com/v1")
-API_KEY = os.getenv("SEEDANCE_API_KEY")
+BASE_URL = os.getenv("SEEGEN_BASE_URL", "https://seegen.ai/api/v1")
+API_KEY = os.getenv("SEEGEN_API_KEY")
 
 if not API_KEY:
-    raise ValueError("Please set SEEDANCE_API_KEY on .env")
+    raise ValueError("SEEGEN_API_KEY must be set in .env file")
 
 HEADERS = {
     "Authorization": f"Bearer {API_KEY}",
     "Content-Type": "application/json"
 }
 
+
 @app.get("/")
 async def root():
-    return {"message": "Seedance2 AI API working", "docs": "/docs"}
+    return {
+        "message": "SeeGen AI (Seedance 2.0) Proxy is running",
+        "docs": "/docs"
+    }
 
-@app.post("/generate/text2video")
-async def text2video(
-    prompt: str = Form(...),
-    duration: int = Form(5),
-    width: int = Form(1024),
-    height: int = Form(576),
-    negative_prompt: Optional[str] = Form(None)
-):
-    """text to video"""
-    try:
-        payload = {
-            "prompt": prompt,
-            "duration": duration,
-            "width": width,
-            "height": height,
-            "negative_prompt": negative_prompt
-        }
-        
-        response = requests.post(
-            f"{BASE_URL}/generations/text2video",
-            headers=HEADERS,
-            json=payload
-        )
-        
-        if response.status_code not in (200, 201):
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=response.text
-            )
-            
-        return JSONResponse(content=response.json())
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/generate/image2video")
-async def image2video(
-    image: UploadFile = File(...),
-    prompt: str = Form(...),
-    duration: int = Form(5),
-    motion_strength: float = Form(0.8)
-):
-    """image to video"""
-    try:
-        files = {
-            "image": (image.filename, await image.read(), image.content_type)
-        }
-        
-        data = {
-            "prompt": prompt,
-            "duration": duration,
-            "motion_strength": motion_strength
-        }
-        
-        response = requests.post(
-            f"{BASE_URL}/generations/image2video",
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            files=files,
-            data=data
-        )
-        
-        if response.status_code not in (200, 201):
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=response.text
-            )
-            
-        return JSONResponse(content=response.json())
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@app.post("/jobs/createTask")
+async def create_task(payload: Dict[str, Any]):
+    """Create a video generation task (text2video / image2video / keyframe / reference)"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{BASE_URL}/jobs/createTask", json=payload, headers=HEADERS)
+        if resp.status_code != 200:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return resp.json()
 
-@app.get("/tasks/{task_id}")
-async def get_task_status(task_id: str):
-    """get task status"""
-    try:
-        response = requests.get(
-            f"{BASE_URL}/tasks/{task_id}",
-            headers=HEADERS
-        )
-        
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=response.text
-            )
-            
-        return JSONResponse(content=response.json())
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/tasks")
-async def list_tasks(limit: int = 10, offset: int = 0):
-    """get tasks list"""
-    try:
-        params = {"limit": limit, "offset": offset}
-        response = requests.get(
-            f"{BASE_URL}/tasks",
-            headers=HEADERS,
-            params=params
-        )
-        
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=response.text
-            )
-            
-        return JSONResponse(content=response.json())
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/jobs/queryTask")
+async def query_task(taskId: str = Query(..., alias="taskId")):
+    """Query task status and result"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{BASE_URL}/jobs/queryTask?taskId={taskId}", headers=HEADERS)
+        if resp.status_code != 200:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return resp.json()
+
+
+@app.get("/account/credits")
+async def get_credits():
+    """Get account credit balance"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{BASE_URL}/account/credits", headers=HEADERS)
+        if resp.status_code != 200:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return resp.json()
+
+
+@app.post("/assets/upload")
+async def upload_asset(payload: Dict[str, Any]):
+    """Upload asset (IMAGE/VIDEO/AUDIO) for review"""
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{BASE_URL}/assets/upload", json=payload, headers=HEADERS)
+        if resp.status_code != 200:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return resp.json()
+
+
+@app.get("/assets/status")
+async def asset_status(assetId: Optional[str] = None, volcAssetId: Optional[str] = None):
+    """Query asset review status"""
+    params = {}
+    if assetId:
+        params["assetId"] = assetId
+    if volcAssetId:
+        params["volcAssetId"] = volcAssetId
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{BASE_URL}/assets/status", params=params, headers=HEADERS)
+        if resp.status_code != 200:
+            raise HTTPException(status_code=resp.status_code, detail=resp.text)
+        return resp.json()
+
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
